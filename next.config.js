@@ -5,6 +5,9 @@ const nextConfig = {
   compiler: {
     emotion: true,
   },
+  images: {
+    domains: ["i.dummyjson.com"],
+  },
 };
 
 module.exports = nextConfig;
