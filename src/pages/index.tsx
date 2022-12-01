@@ -1,64 +1,31 @@
-import styled from "@emotion/styled";
+import { useEffect } from "react";
+import { NextPage } from "next";
 import Head from "next/head";
-import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
+import styled from "@emotion/styled";
+import { useInView } from "react-intersection-observer";
 
-type CategoryType =
-  | "smartphones"
-  | "laptops"
-  | "fragrances"
-  | "skincare"
-  | "groceries"
-  | "home-decoration"
-  | "furniture"
-  | "tops"
-  | "womens-dresses"
-  | "womens-shoes"
-  | "mens-shirts"
-  | "mens-shoes"
-  | "mens-watches"
-  | "womens-watches"
-  | "womens-bags"
-  | "womens-jewellery"
-  | "sunglasses"
-  | "automotive"
-  | "motorcycle"
-  | "lighting";
+import ProductItemList from "@app/components/itemList/ProductItemList";
+import { useProductListInfinityQuery } from "@app/hooks/useQuery/products";
+import { getProducts } from "@app/apis/products";
+import { Product } from "@app/types";
 
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  brand: string;
-  category: CategoryType;
-  thumbnail: string;
-  images: string[];
+interface HomeProps {
+  initialData: {
+    products: Product[];
+    nextPage: number | undefined;
+    hasNextPage: boolean;
+  };
 }
 
-const Home = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [page, setPage] = useState<number>(1);
-
-  const fetchData = useCallback(async () => {
-    const { data } = await axios.get(
-      "https://dummyjson.com/products?limit=10&skip=0"
-    );
-
-    setProducts(data.products);
-  }, []);
+const Home: NextPage<HomeProps> = ({ initialData }) => {
+  const { ref, inView } = useInView();
+  const { data, fetchNextPage } = useProductListInfinityQuery(initialData);
 
   useEffect(() => {
-    fetchData();
-
-    return () => {
-      setProducts([]);
-    };
-  }, [fetchData]);
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, inView]);
 
   return (
     <S.Layout>
@@ -69,44 +36,25 @@ const Home = () => {
       </Head>
 
       <S.Heading>Hello, 안녕</S.Heading>
-      <S.Items>
-        {products.map((product) => {
-          return (
-            <S.Item key={product.id}>
-              <Image
-                src={product.thumbnail}
-                alt={product.title + " thumbnail"}
-                width={100}
-                height={100}
-              />
-              <span>{product.title}</span>
-              <span>{product.description}</span>
-              <span>{product.price}</span>
-              <span>{product.brand}</span>
-              <span>{product.rating}</span>
-              <span>{product.stock}</span>
-              <span>{product.discountPercentage}</span>
-            </S.Item>
-          );
-        })}
-      </S.Items>
-
-      <S.Box>
-        <S.Button onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : 1))}>
-          {"<"}
-        </S.Button>
-        <span style={{ padding: "16px" }}>{`[${page}]`}</span>
-        <S.Button
-          onClick={() => setPage((prev) => (prev < 10 ? prev + 1 : 10))}
-        >
-          {">"}
-        </S.Button>
-      </S.Box>
+      <S.Section>
+        <ProductItemList
+          products={data?.pages.flatMap((data) => data?.products)}
+        />
+      </S.Section>
+      <div ref={ref} />
     </S.Layout>
   );
 };
 
 export default Home;
+
+export const getServerSideProps = async () => {
+  const { limit, products, skip, total } = await getProducts(0);
+  const hasNextPage = total > limit + skip;
+  const nextPage = hasNextPage ? 1 : undefined;
+
+  return { props: { initialData: { products, nextPage, hasNextPage } } };
+};
 
 const Layout = styled.div`
   width: 100%;
@@ -117,50 +65,20 @@ const Layout = styled.div`
   align-items: center;
 `;
 
+const Section = styled.section`
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+`;
+
 const Heading = styled.h1`
   font-weight: 900;
-  color: #5dd8a5;
-  opacity: 0.9;
-`;
-
-const Items = styled.ul`
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 25%);
-  grid-template-rows: repeat(3, 1fr);
-  row-gap: 8px;
-  column-gap: 8px;
-`;
-
-const Item = styled.li`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: #f7f7f7;
-`;
-
-const Box = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Button = styled.button`
-  width: 32px;
-  background-color: #92b4ec;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
+  padding: 16px;
+  font-size: 24px;
 `;
 
 const S = {
   Layout,
+  Section,
   Heading,
-  Items,
-  Item,
-  Box,
-  Button,
 };
