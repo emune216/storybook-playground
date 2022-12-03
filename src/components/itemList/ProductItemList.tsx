@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 import { Product } from "@app/types";
-import ProductItem from "@app/components/item/ProductItem";
+import Item from "@app/components/item/Item";
 
 interface ProductItemListProps {
   products: (Product | undefined)[] | undefined;
@@ -12,7 +12,19 @@ const ProductItemList = ({ products }: ProductItemListProps) => {
     <Layout>
       {products?.map((item) => {
         if (!item) return null;
-        return <ProductItem key={item.id} product={item} />;
+        return (
+          <Item
+            key={item.id}
+            id={item.id}
+            thumbnail={item.thumbnail}
+            title={item.title}
+            description={item.description}
+            price={item.price + ""}
+            brand={item.brand}
+            rating={item.rating}
+            stock={item.stock}
+          />
+        );
       })}
     </Layout>
   );
