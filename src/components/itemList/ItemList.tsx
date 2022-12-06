@@ -3,11 +3,11 @@ import styled from "@emotion/styled";
 import { Product } from "@app/types";
 import Item from "@app/components/item/Item";
 
-interface ProductItemListProps {
+export interface ItemListProps {
   products: (Product | undefined)[] | undefined;
 }
 
-const ProductItemList = ({ products }: ProductItemListProps) => {
+const ItemList = ({ products }: ItemListProps) => {
   return (
     <Layout>
       {products?.map((item) => {
@@ -19,7 +19,7 @@ const ProductItemList = ({ products }: ProductItemListProps) => {
             thumbnail={item.thumbnail}
             title={item.title}
             description={item.description}
-            price={item.price + ""}
+            price={item.price}
             brand={item.brand}
             rating={item.rating}
             stock={item.stock}
@@ -30,7 +30,7 @@ const ProductItemList = ({ products }: ProductItemListProps) => {
   );
 };
 
-export default ProductItemList;
+export default ItemList;
 
 const Layout = styled.ul`
   width: 100%;

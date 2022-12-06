@@ -10,7 +10,7 @@ Default.args = {
   thumbnail: "https://i.dummyjson.com/data/products/6/thumbnail.png",
   title: "맥북",
   description: "맥북 16인치",
-  price: "3000달러",
+  price: 3000,
   brand: "apple",
   rating: 4.5,
   stock: 140,
@@ -25,9 +25,4 @@ export default {
       </div>
     ),
   ],
-  parameters: {
-    docs: {
-      description: "gogo",
-    },
-  },
 } as Meta;

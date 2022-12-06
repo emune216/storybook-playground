@@ -6,7 +6,7 @@ export interface ItemProps {
   thumbnail: string;
   title: string;
   description: string;
-  price: string;
+  price: number;
   brand: string;
   rating: number;
   stock: number;
