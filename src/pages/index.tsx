@@ -1,25 +1,26 @@
 import { useEffect } from "react";
 import { NextPage } from "next";
-import Head from "next/head";
 import styled from "@emotion/styled";
 import { useInView } from "react-intersection-observer";
 
-import ProductItemList from "@app/components/itemList/ProductItemList";
+import ProductItemList from "@app/components/itemList/ItemList";
 import { useProductListInfinityQuery } from "@app/hooks/useQuery/products";
 import { getProducts } from "@app/apis/products";
 import { Product } from "@app/types";
 
 interface HomeProps {
-  initialData: {
-    products: Product[];
-    nextPage: number | undefined;
-    hasNextPage: boolean;
-  };
+  products: Product[];
+  nextPage: number | undefined;
+  hasNextPage: boolean;
 }
 
-const Home: NextPage<HomeProps> = ({ initialData }) => {
+const Home: NextPage<HomeProps> = ({ products, nextPage, hasNextPage }) => {
   const { ref, inView } = useInView();
-  const { data, fetchNextPage } = useProductListInfinityQuery(initialData);
+  const { data, fetchNextPage } = useProductListInfinityQuery({
+    products,
+    nextPage,
+    hasNextPage,
+  });
 
   useEffect(() => {
     if (inView) {
@@ -47,7 +48,7 @@ export const getServerSideProps = async () => {
   const hasNextPage = total > limit + skip;
   const nextPage = hasNextPage ? 1 : undefined;
 
-  return { props: { initialData: { products, nextPage, hasNextPage } } };
+  return { props: { products, nextPage, hasNextPage } };
 };
 
 const Layout = styled.div`

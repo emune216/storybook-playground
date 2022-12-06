@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { Product } from "@app/types";
 import Item from "@app/components/item/Item";
 
-export interface ItemListProps {
+interface ItemListProps {
   products: (Product | undefined)[] | undefined;
 }
 

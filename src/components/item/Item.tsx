@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styled from "@emotion/styled";
 
-export interface ItemProps {
+interface ItemProps {
   id: string;
   thumbnail: string;
   title: string;

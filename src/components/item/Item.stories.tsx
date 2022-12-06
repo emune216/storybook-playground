@@ -1,7 +1,10 @@
 import { Meta, Story } from "@storybook/react";
-import Item, { ItemProps } from "./Item";
+import Item from "./Item";
+import { ComponentProps } from "react";
 
-const Template: Story<ItemProps> = (args) => <Item {...args} />;
+const Template: Story<ComponentProps<typeof Item>> = (args) => (
+  <Item {...args} />
+);
 
 export const Default = Template.bind({});
 
